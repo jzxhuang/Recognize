@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         ocrButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                OCRHandler ocr = new OCRHandler(MainActivity.this);
+                OCRHandler ocr = new OCRHandler();
                 ocr.processImage();
             }
         });
@@ -195,8 +195,9 @@ public class MainActivity extends AppCompatActivity {
                         buffer.get(bytes);
                         Log.e("test:" , "out");
                         Toast.makeText(MainActivity.this, "hello", Toast.LENGTH_SHORT).show();
-                        //OCRHandler ocr = new OCRHandler(bytes);
-                        //ocr.processImage();
+                        OCRHandler ocr = new OCRHandler(bytes);
+//                        OCRHandler ocr = new OCRHandler();
+                        ocr.processImage();
                         //save(bytes);
                     } finally {
                         if (image != null) {
