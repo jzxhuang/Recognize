@@ -87,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
                 takePicture();
             }
         });
+        Button ocrButton = (Button) findViewById(R.id.btnOCR);
+        ocrButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OCRHandler ocr = new OCRHandler(MainActivity.this);
+                ocr.processImage();
+            }
+        });
     }
     TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
         @Override
@@ -187,8 +195,8 @@ public class MainActivity extends AppCompatActivity {
                         buffer.get(bytes);
                         Log.e("test:" , "out");
                         Toast.makeText(MainActivity.this, "hello", Toast.LENGTH_SHORT).show();
-                        OCRHandler ocr = new OCRHandler(bytes);
-                        ocr.processImage();
+                        //OCRHandler ocr = new OCRHandler(bytes);
+                        //ocr.processImage();
                         //save(bytes);
                     } finally {
                         if (image != null) {

@@ -20,4 +20,12 @@
         android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"
         android:text="@string/take_picture" />
+
+    <Button
+        android:id="@+id/btnOCR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btn_takepicture"
+        android:layout_toEndOf="@+id/btn_takepicture"
+        android:text="OCR" />
 </RelativeLayout>
