@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
                         byte[] bytes = new byte[buffer.capacity()];
                         buffer.get(bytes);
                         Log.e("test:" , "out");
-                        Toast.makeText(MainActivity.this, "hello", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "hello", Toast.LENGTH_SHORT).show();
                         //OCRHandler ocr = new OCRHandler(bytes);
                         //ocr.processImage();
                         //save(bytes);
