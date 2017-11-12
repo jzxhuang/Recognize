@@ -2,6 +2,8 @@ package app.yjcl.recognize;
 
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -17,6 +19,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -46,6 +49,9 @@ public class OcrActivity extends AppCompatActivity {
     private int[] intArr;
     private Rectangle[] rectArr;
     private String[] strArr;
+    private boolean searchOnline;
+    private boolean copyToClip;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +59,8 @@ public class OcrActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         Bitmap bitmapImage = (Bitmap) extras.getParcelable("data");
+        searchOnline = extras.getBoolean("searchOnline");
+        copyToClip = extras.getBoolean("copyToClip");
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -85,14 +93,14 @@ public class OcrActivity extends AppCompatActivity {
         }
     }
 
-    private void POST(byte[] bytes){
+    private void POST(byte[] bytes) {
         httpClient = new AsyncHttpClient();
         RequestParams params = new RequestParams();
         params.put("language", "en");
         params.put("detectOrientation", "true");
         httpClient.addHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
 
-        try{
+        try {
 //          StringEntity entity = new StringEntity("{\"url\":\"https://upload.wikimedia.org/wikipedia/commons/2/23/Space_Needle_2011-07-04.jpg\"}");
             ByteArrayEntity entity = new ByteArrayEntity(bytes);
             httpClient.post(null, uriBase, entity, "application/octet-stream", new JsonHttpResponseHandler() {
@@ -114,9 +122,9 @@ public class OcrActivity extends AppCompatActivity {
                     StringBuilder boxes = new StringBuilder();
 
                     try {
-                        for (int i = 0; i < regions.length(); i++){
-                            for (int j = 0; j < regions.getJSONObject(i).getJSONArray("lines").length(); j++){
-                                for (int k=0; k< regions.getJSONObject(i).getJSONArray("lines").getJSONObject(j).getJSONArray("words").length(); k++){
+                        for (int i = 0; i < regions.length(); i++) {
+                            for (int j = 0; j < regions.getJSONObject(i).getJSONArray("lines").length(); j++) {
+                                for (int k = 0; k < regions.getJSONObject(i).getJSONArray("lines").getJSONObject(j).getJSONArray("words").length(); k++) {
                                     s.append(regions.getJSONObject(i).getJSONArray("lines").getJSONObject(j).getJSONArray("words").getJSONObject(k).getString("text"));
                                     boxes.append(regions.getJSONObject(i).getJSONArray("lines").getJSONObject(j).getJSONArray("words").getJSONObject(k).getString("boundingBox"));
                                     s.append(' ');
@@ -132,17 +140,23 @@ public class OcrActivity extends AppCompatActivity {
                         String boxOut = boxes.toString().replace(',', ' ');
                         String[] splitOut = boxOut.split("\\s+");
                         int[] numOut = new int[splitOut.length];
-                        for(int i =0; i < splitOut.length; i++){
-                            numOut[i] = Integer.parseInt(splitOut[i]);
-                        }
-                        Rectangle[] rectArray = new Rectangle[numOut.length/4];
-                        for(int i = 0; i < numOut.length/4; i++){
-                            rectArray[i] = new Rectangle();
-                            rectArray[i].setBounds(numOut[i], numOut[i+1], numOut[i+2], numOut[i+3]);
-                            //canvas.drawRect(numOut[i], numOut[i+1], numOut[i+2], numOut[i+3]);
-                        }
-                        rectArr = rectArray;
-                        intArr = numOut;
+
+                        if (splitOut[0].toString() == "") {
+                            Toast.makeText(OcrActivity.this, "Image Recognition Failed", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(OcrActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        } else {
+                            for (int i = 0; i < splitOut.length; i++) {
+                                numOut[i] = Integer.parseInt(splitOut[i]);
+                            }
+                            Rectangle[] rectArray = new Rectangle[numOut.length / 4];
+                            for (int i = 0; i < numOut.length / 4; i++) {
+                                rectArray[i] = new Rectangle();
+                                rectArray[i].setBounds(numOut[i], numOut[i + 1], numOut[i + 2], numOut[i + 3]);
+                                //canvas.drawRect(numOut[i], numOut[i+1], numOut[i+2], numOut[i+3]);
+                            }
+                            rectArr = rectArray;
+                            intArr = numOut;
 
 //                        Paint myPaint = new Paint();
 //                        myPaint.setStyle(Paint.Style.STROKE);
@@ -155,23 +169,35 @@ public class OcrActivity extends AppCompatActivity {
 //                        }
 //                        imageViewOverlay.setImageBitmap(bitmapOverlay);
 
-                        Log.e("Result", s.toString());
-                        Log.e("Boxes", boxOut);
-                        Log.e("Array", splitOut[2]);
+                            Log.e("Result", s.toString());
+                            Log.e("Boxes", boxOut);
+                            Log.e("Array", splitOut[2]);
+
+                            if (copyToClip) {
+                                ClipboardManager clipboard = (ClipboardManager)
+                                        getSystemService(OcrActivity.CLIPBOARD_SERVICE);
+                                ClipData clip = ClipData.newPlainText("Link", strArr[0]);
+                                clipboard.setPrimaryClip(clip);
+                                Toast.makeText(OcrActivity.this, "Copied " + strArr[0] +" to clipboard!", Toast.LENGTH_SHORT).show();
+                            }
+                            if (searchOnline) {
+                                searchWeb(strArr[0]);
+                            }
+
+                        }
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    searchWeb(strArr[0]);
-
                 }
+
                 public void onFailure(JSONObject errorResponse, Throwable error) {
                     Log.e("ERROR", "failure in HTTP Request", error);
                 }
             });
-        }
-        catch(Exception e){
-            Log.e("ERROR:","Exception");
+        } catch (Exception e) {
+            Log.e("ERROR:", "Exception");
         }
 
     }

@@ -6,10 +6,43 @@
     android:orientation="vertical"
     tools:context="app.yjcl.recognize.MainActivity">
 
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Recognize"/>
+        android:layout_above="@id/copy_to_clip"
+        android:layout_centerHorizontal="true">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/search_check_box"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search online"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/copy_to_clip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/btn_takepicture"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/clip_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Copy to clipboard"/>
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/btn_takepicture"

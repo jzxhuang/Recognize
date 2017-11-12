@@ -37,6 +37,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -56,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0";
     static final int REQUEST_IMAGE_CAPTURE = 1;
     public Bitmap mBitmap;
+    CheckBox searchOnline;
+    CheckBox copyToClip;
 
 //    private static final String TAG = "MainActivity";
 //    private Button takePictureButton;
@@ -97,6 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
             Intent intent = new Intent(getApplicationContext(), OcrActivity.class);
             extras.putParcelable("data", imageBitmap);
+            if (searchOnline.isChecked()) {
+                extras.putBoolean("searchOnline", true);
+            }
+            if (copyToClip.isChecked()) {
+                extras.putBoolean("copyToClip", true);
+            }
             intent.putExtras(extras);
             startActivity(intent);
         }
@@ -110,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
 //        textureView = (TextureView) findViewById(R.id.texture);
 //        assert textureView != null;
 //        textureView.setSurfaceTextureListener(textureListener);
+
+         searchOnline = (CheckBox) findViewById(R.id.search_check_box);
+         copyToClip = (CheckBox) findViewById(R.id.clip_check_box);
 
         Button takePictureButton = (Button) findViewById(R.id.btn_takepicture);
         takePictureButton.setOnClickListener(new View.OnClickListener() {
