@@ -1,7 +1,11 @@
 package app.yjcl.recognize;
 
+import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Region;
+import android.net.Uri;
+import android.support.constraint.solver.widgets.Rectangle;
 import android.util.Log;
 
 import org.json.*;
@@ -23,13 +27,16 @@ import java.util.Iterator;
 public class OCRHandler {
     private static final String subscriptionKey = "f37f9bb130094c6a81ee64e6b6a97be7";
     private static final String uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/ocr";
-
+    private static final String imageURL = "http://www.folgerdigitaltexts.org/Images/grab6.png";
+    public JSONObject toReturn;
     private static AsyncHttpClient httpClient;
     private byte[] input;
-    private static final String imageURL = "http://www.folgerdigitaltexts.org/Images/grab6.png";
-    OCRHandler(byte[] bytes){
+    Context context;
+
+    OCRHandler(byte[] bytes, Context context){
         input = bytes;
         httpClient = new AsyncHttpClient();
+        this.context = context;
     }
     OCRHandler(){
         httpClient = new AsyncHttpClient();
@@ -37,7 +44,7 @@ public class OCRHandler {
 
     protected void processImage(){
         RequestParams params = new RequestParams();
-        params.put("language", "unk");
+        params.put("language", "en");
         params.put("detectOrientation", "true");
         httpClient.addHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
 
@@ -46,29 +53,8 @@ public class OCRHandler {
             ByteArrayEntity entity = new ByteArrayEntity(input);
             httpClient.post(null, uriBase, entity, "application/octet-stream", new JsonHttpResponseHandler() {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    JSONArray regions = null;
-                    try {
-                        regions = response.getJSONArray("regions");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    String result = response.toString();
-                    Log.e("REST Result:", result);
-
-                    StringBuilder s = new StringBuilder();
-                    try {
-                        for (int i = 0; i < regions.length(); i++){
-                            for (int j = 0; j < regions.getJSONObject(i).getJSONArray("lines").length(); j++){
-                                for (int k=0; k< regions.getJSONObject(i).getJSONArray("lines").getJSONObject(j).getJSONArray("words").length(); k++){
-                                    s.append(regions.getJSONObject(i).getJSONArray("lines").getJSONObject(j).getJSONArray("words").getJSONObject(k).getString("text"));
-                                }
-                            }
-                        }
-//                        String modifiedResult = response.getJSONArray("regions").getJSONObject(0).getJSONArray("lines").getJSONObject(0).getJSONArray("words").getJSONObject(0).getString("text");
-                        Log.e("Result", s.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    toReturn = response;
+                    Log.e("a", "b");
                 }
                 public void onFailure(JSONObject errorResponse, Throwable error) {
                     Log.e("ERROR", "failure in HTTP Request", error);
@@ -77,6 +63,15 @@ public class OCRHandler {
         }
         catch(Exception e){
             Log.e("ERROR:","Exception");
+        }
+//        return toReturn;
+    }
+
+    public void searchWeb(String query) {
+        Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+        intent.putExtra(SearchManager.QUERY, query);
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(intent);
         }
     }
 }
