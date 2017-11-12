@@ -67,11 +67,11 @@ public class OCRHandler {
 //        return toReturn;
     }
 
-    public void searchWeb(String query) {
-        Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-        intent.putExtra(SearchManager.QUERY, query);
-        if (intent.resolveActivity(context.getPackageManager()) != null) {
-            context.startActivity(intent);
-        }
-    }
+//    public void searchWeb(String query) {
+//        Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+//        intent.putExtra(SearchManager.QUERY, query);
+//        if (intent.resolveActivity(context.getPackageManager()) != null) {
+//            context.startActivity(intent);
+//        }
+//    }
 }

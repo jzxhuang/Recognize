@@ -96,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
             mBitmap = imageBitmap;
 
             Intent intent = new Intent(getApplicationContext(), OcrActivity.class);
-            intent.putExtra("data", imageBitmap);
+            extras.putParcelable("data", imageBitmap);
+            intent.putExtras(extras);
             startActivity(intent);
         }
     }
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
 //        textureView = (TextureView) findViewById(R.id.texture);
 //        assert textureView != null;
 //        textureView.setSurfaceTextureListener(textureListener);
+
         Button takePictureButton = (Button) findViewById(R.id.btn_takepicture);
         takePictureButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,15 +1,21 @@
 package app.yjcl.recognize;
 
+import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.constraint.solver.widgets.Rectangle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.widget.ImageView;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -30,6 +36,8 @@ public class OcrActivity extends AppCompatActivity {
     private static final String uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/ocr";
     private static final String imageURL = "http://www.folgerdigitaltexts.org/Images/grab6.png";
     public JSONObject jsonPOST;
+    private float Scalex = 0;
+    private float Scaley = 0;
     private static AsyncHttpClient httpClient;
     private byte[] input;
     private Canvas cv;
@@ -43,15 +51,12 @@ public class OcrActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ocr);
 
-        Bitmap bitmapImage = (Bitmap) getIntent().getExtras().getParcelable("data");
+        Bundle extras = getIntent().getExtras();
+        Bitmap bitmapImage = (Bitmap) extras.getParcelable("data");
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-
-
         byte[] byteArray = stream.toByteArray();
-
-
 
         imageView = (ImageView) findViewById(R.id.ocrImage);
         imageView.setImageBitmap(bitmapImage);
@@ -64,7 +69,20 @@ public class OcrActivity extends AppCompatActivity {
         POST(byteArray);
     }
 
-    private void calculate(JSONObject response){
+    public void searchWeb(String query) {
+        Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+        intent.putExtra(SearchManager.QUERY, query);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+    public void openWebPage(String url) {
+        Uri webpage = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     private void POST(byte[] bytes){
@@ -80,6 +98,7 @@ public class OcrActivity extends AppCompatActivity {
             httpClient.post(null, uriBase, entity, "application/octet-stream", new JsonHttpResponseHandler() {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     jsonPOST = response;
+
                     Log.e("a", "b");
 //                    calculate(jsonPOST);
                     JSONArray regions = null;
@@ -125,16 +144,16 @@ public class OcrActivity extends AppCompatActivity {
                         rectArr = rectArray;
                         intArr = numOut;
 
-                        Paint myPaint = new Paint();
-                        myPaint.setStyle(Paint.Style.STROKE);
-                        myPaint.setColor(Color.rgb(255, 0, 0));
-                        myPaint.setStrokeWidth(10);
-                        Bitmap bitmapOverlay = Bitmap.createBitmap(imageView.getHeight(), imageView.getWidth(), Bitmap.Config.ARGB_8888);
-                        cv = new Canvas(bitmapOverlay);
-                        for(int i = 0; i < intArr.length/4; i++){
-                            cv.drawRect(numOut[i], numOut[i+1], numOut[i+2], numOut[i+3], myPaint);
-                        }
-                        imageViewOverlay.setImageBitmap(bitmapOverlay);
+//                        Paint myPaint = new Paint();
+//                        myPaint.setStyle(Paint.Style.STROKE);
+//                        myPaint.setColor(Color.rgb(255, 0, 0));
+//                        myPaint.setStrokeWidth(10);
+//                        Bitmap bitmapOverlay = Bitmap.createBitmap(imageView.getWidth(), imageView.getHeight(), Bitmap.Config.ARGB_8888);
+//                        cv = new Canvas(bitmapOverlay);
+//                        for(int i = 0; i < intArr.length/4; i++){
+//                            cv.drawRect(numOut[i]*Scalex, numOut[i+1]*Scaley, numOut[i+2]*Scalex, numOut[i+3]*Scaley, myPaint);
+//                        }
+//                        imageViewOverlay.setImageBitmap(bitmapOverlay);
 
                         Log.e("Result", s.toString());
                         Log.e("Boxes", boxOut);
@@ -143,6 +162,8 @@ public class OcrActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    searchWeb(strArr[0]);
+
                 }
                 public void onFailure(JSONObject errorResponse, Throwable error) {
                     Log.e("ERROR", "failure in HTTP Request", error);
@@ -152,5 +173,6 @@ public class OcrActivity extends AppCompatActivity {
         catch(Exception e){
             Log.e("ERROR:","Exception");
         }
+
     }
 }
