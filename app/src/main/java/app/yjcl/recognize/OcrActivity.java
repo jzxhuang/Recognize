@@ -54,8 +54,7 @@ public class OcrActivity extends AppCompatActivity {
     private boolean copyToClip;
     private String userSelect;
     private Intent intent;
-
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -202,7 +201,24 @@ public class OcrActivity extends AppCompatActivity {
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                            alertBuilder2.setMessage(userSelect);
+                                            alertBuilder2.setMessage(userSelect)
+                                                    .setPositiveButton("Open", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            searchWeb(userSelect);
+                                                        }
+                                                    })
+                                                    .setNeutralButton("Copy to Clipboard", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            ClipboardManager clipboard = (ClipboardManager)
+                                                                    getSystemService(OcrActivity.CLIPBOARD_SERVICE);
+                                                            ClipData clip = ClipData.newPlainText("Link", userSelect);
+                                                            clipboard.setPrimaryClip(clip);
+                                                            Toast.makeText(OcrActivity.this, "Copied " + userSelect +" to clipboard!", Toast.LENGTH_SHORT).show();
+                                                            startActivity(intent);
+                                                        }
+                                                    });
                                             AlertDialog alert2 = alertBuilder2.create();
                                             alert2.show();
                                         }
@@ -210,24 +226,7 @@ public class OcrActivity extends AppCompatActivity {
                             AlertDialog alert1 = alertBuilder1.create();
                             alert1.show();
 
-                            alertBuilder2.setTitle("What would you like to do?")
-                                    .setPositiveButton("Open", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            searchWeb(strArr[0]);
-                                        }
-                                    })
-                                    .setNeutralButton("Copy to Clipboard", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            ClipboardManager clipboard = (ClipboardManager)
-                                                    getSystemService(OcrActivity.CLIPBOARD_SERVICE);
-                                            ClipData clip = ClipData.newPlainText("Link", strArr[0]);
-                                            clipboard.setPrimaryClip(clip);
-                                            Toast.makeText(OcrActivity.this, "Copied " + userSelect +" to clipboard!", Toast.LENGTH_SHORT).show();
-                                            startActivity(intent);
-                                        }
-                                    });
+                            alertBuilder2.setTitle("What would you like to do?");
                         }
 
 
@@ -243,6 +242,5 @@ public class OcrActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("ERROR:", "Exception");
         }
-
     }
 }
