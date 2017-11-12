@@ -224,7 +224,7 @@ public class OcrActivity extends AppCompatActivity {
                                                     getSystemService(OcrActivity.CLIPBOARD_SERVICE);
                                             ClipData clip = ClipData.newPlainText("Link", strArr[0]);
                                             clipboard.setPrimaryClip(clip);
-                                            Toast.makeText(OcrActivity.this, "Copied " + strArr[0] +" to clipboard!", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(OcrActivity.this, "Copied " + userSelect +" to clipboard!", Toast.LENGTH_SHORT).show();
                                             startActivity(intent);
                                         }
                                     });
