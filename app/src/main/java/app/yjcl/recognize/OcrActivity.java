@@ -54,7 +54,7 @@ public class OcrActivity extends AppCompatActivity {
     private boolean copyToClip;
     private String userSelect;
     private Intent intent;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,14 +62,23 @@ public class OcrActivity extends AppCompatActivity {
 
         // Get bitmap and boolean data from previous activity
         Bundle extras = getIntent().getExtras();
-//        Uri uri = Uri.parse(extras.getString("data"));
+        Uri uri = Uri.parse(extras.getString("data"));
 
-        Bitmap bitmapImage = (Bitmap) extras.getParcelable("data");
+        Bitmap bitmapImage = null;
+        try {
+            bitmapImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        // Convery bitmap into byte array for processing
+//        Bitmap bitmapImage = (Bitmap) extras.getParcelable("data");
+
+        // Convert bitmap into byte array for processing
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bitmapImage.compress(Bitmap.CompressFormat.JPEG, 25, stream);
         byte[] byteArray = stream.toByteArray();
+        int size = byteArray.length;
+        Log.e("size of byte array", Integer.toString(size));
 
         imageView = (ImageView) findViewById(R.id.ocrImage);
         imageView.setImageBitmap(bitmapImage);
@@ -186,9 +195,9 @@ public class OcrActivity extends AppCompatActivity {
                             AlertDialog.Builder alertBuilder1 = new AlertDialog.Builder(OcrActivity.this);
                             final AlertDialog.Builder alertBuilder2 = new AlertDialog.Builder(OcrActivity.this);
                             alertBuilder1.setTitle("Select your text");
-                            alertBuilder1.setSingleChoiceItems(strArr, -1, new DialogInterface.OnClickListener(){
+                            alertBuilder1.setSingleChoiceItems(strArr, -1, new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onClick(DialogInterface d, int i){
+                                public void onClick(DialogInterface d, int i) {
                                     userSelect = strArr[i];
                                 }
                             })
@@ -215,7 +224,7 @@ public class OcrActivity extends AppCompatActivity {
                                                                     getSystemService(OcrActivity.CLIPBOARD_SERVICE);
                                                             ClipData clip = ClipData.newPlainText("Link", userSelect);
                                                             clipboard.setPrimaryClip(clip);
-                                                            Toast.makeText(OcrActivity.this, "Copied " + userSelect +" to clipboard!", Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(OcrActivity.this, "Copied " + userSelect + " to clipboard!", Toast.LENGTH_SHORT).show();
                                                             startActivity(intent);
                                                         }
                                                     });
@@ -226,16 +235,33 @@ public class OcrActivity extends AppCompatActivity {
                             AlertDialog alert1 = alertBuilder1.create();
                             alert1.show();
 
-                            alertBuilder2.setTitle("What would you like to do?");
+
+                            alertBuilder2.setTitle("What would you like to do?")
+                                    .setPositiveButton("Open", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            searchWeb(strArr[0]);
+                                        }
+                                    })
+                                    .setNeutralButton("Copy to Clipboard", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogxInterface, int i) {
+                                            ClipboardManager clipboard = (ClipboardManager)
+                                                    getSystemService(OcrActivity.CLIPBOARD_SERVICE);
+                                            ClipData clip = ClipData.newPlainText("Link", userSelect);
+                                            clipboard.setPrimaryClip(clip);
+                                            Toast.makeText(OcrActivity.this, "Copied " + userSelect + " to clipboard!", Toast.LENGTH_SHORT).show();
+                                            startActivity(intent);
+                                        }
+                                    });
                         }
-
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
 
-                public void onFailure(JSONObject errorResponse, Throwable error) {
+                public void onFailure(int status, JSONObject errorResponse, Throwable error) {
+                    Log.e("ERROR CODE:", Integer.toString(status));
                     Log.e("ERROR", "failure in HTTP Request", error);
                 }
             });
