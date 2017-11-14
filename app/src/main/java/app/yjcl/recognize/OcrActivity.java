@@ -240,7 +240,7 @@ public class OcrActivity extends AppCompatActivity {
                                     .setPositiveButton("Open", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                            searchWeb(strArr[0]);
+                                            searchWeb(userSelect);
                                         }
                                     })
                                     .setNeutralButton("Copy to Clipboard", new DialogInterface.OnClickListener() {
