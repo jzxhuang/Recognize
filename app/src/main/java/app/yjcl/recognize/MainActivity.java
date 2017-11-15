@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
             // Get the data from the camera and store as a bitmap
-            Bundle extras = data.getExtras();
+//            Bundle extras = data.getExtras();
 //            Bitmap imageBitmap = (Bitmap) extras.get("data");
 //            mBitmap = imageBitmap;
 

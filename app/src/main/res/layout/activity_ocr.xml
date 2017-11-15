@@ -6,11 +6,20 @@
     android:layout_height="match_parent"
     tools:context="app.yjcl.recognize.OcrActivity">
 
+
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:id="@+id/ocrImage"/>
+
+    <ProgressBar
+        android:id="@+id/indeterminateBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        />
 
     <ImageView
         android:layout_width="match_parent"
