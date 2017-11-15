@@ -39,7 +39,7 @@ import cz.msebera.android.httpclient.entity.ByteArrayEntity;
 
 public class OcrActivity extends AppCompatActivity {
     private static final String subscriptionKey = "f37f9bb130094c6a81ee64e6b6a97be7";
-    private static final String uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/ocr";
+    private static final String uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/ocr?language=en&detectOrientation=true";
     private static final String imageURL = "http://www.folgerdigitaltexts.org/Images/grab6.png";
     public JSONObject jsonPOST;
     private static AsyncHttpClient httpClient;
@@ -300,7 +300,7 @@ public class OcrActivity extends AppCompatActivity {
                 }
             });
         } catch (Exception e) {
-            Log.e("ERROR:", "Exception");
+            Log.e("ERROR:", "Exception", e);
         }
     }
 }
