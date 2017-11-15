@@ -57,7 +57,6 @@ public class OcrActivity extends AppCompatActivity {
     private String userSelect;
     private Intent intent;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +70,6 @@ public class OcrActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         Uri uri = Uri.parse(extras.getString("data"));
 
-        // Create the bitmap from memory
         Bitmap bitmapImage = null;
         try {
             bitmapImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
@@ -79,17 +77,18 @@ public class OcrActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // Load up Views
-        imageView = (ImageView) findViewById(R.id.ocrImage);
-        imageView.setImageBitmap(bitmapImage);
-
+//        Bitmap bitmapImage = (Bitmap) extras.getParcelable("data");
 
         // Convert bitmap into byte array for processing
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmapImage.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+        bitmapImage.compress(Bitmap.CompressFormat.JPEG, 25, stream);
         byte[] byteArray = stream.toByteArray();
         int size = byteArray.length;
         Log.e("size of byte array", Integer.toString(size));
+
+        // Load up Views
+        imageView = (ImageView) findViewById(R.id.ocrImage);
+        imageView.setImageBitmap(bitmapImage);
 
         // Send a POST request to Microsoft
         POST(byteArray);
@@ -97,7 +96,7 @@ public class OcrActivity extends AppCompatActivity {
 
     // Search using google app
     public void searchWeb(String query) {
-        Intent intent = new Intent(Intent.ACTION_WEB_SEARCH );
+        Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
         intent.putExtra(SearchManager.QUERY, query);
         startActivity(intent);
     }
@@ -139,7 +138,8 @@ public class OcrActivity extends AppCompatActivity {
 //                    Log.e("a", "b");
 //                    calculate(jsonPOST);
 
-                    JSONArray regions = null;;
+                    JSONArray regions = null;
+                    ;
                     try {
                         regions = response.getJSONArray("regions");
                     } catch (JSONException e) {
@@ -170,8 +170,8 @@ public class OcrActivity extends AppCompatActivity {
 
                         // Determining if item is a link.  Talk to Jeff to see how to incorporate
                         // his bounding boxes with this
-                        for (String string:strArr) {
-                            if (URLUtil.isValidUrl( string )) {
+                        for (String string : strArr) {
+                            if (URLUtil.isValidUrl(string)) {
                                 linkArrList.add(string);
                             }
                         }
@@ -227,10 +227,10 @@ public class OcrActivity extends AppCompatActivity {
                             AlertDialog.Builder alertBuilder1 = new AlertDialog.Builder(OcrActivity.this);
                             final AlertDialog.Builder alertBuilder2 = new AlertDialog.Builder(OcrActivity.this);
                             alertBuilder1.setTitle("Select your text");
-                            alertBuilder1.setSingleChoiceItems(/*linkArr*/  strArr , -1, new DialogInterface.OnClickListener() {
+
+                            alertBuilder1.setSingleChoiceItems(strArr, -1, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface d, int i) {
-//                                    userSelect = strArr[i];
                                     userSelect = strArr[i];
                                 }
                             })
@@ -243,13 +243,31 @@ public class OcrActivity extends AppCompatActivity {
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                            alertBuilder2.setMessage(userSelect);
+                                            alertBuilder2.setMessage(userSelect)
+                                                    .setPositiveButton("Open", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            searchWeb(userSelect);
+                                                        }
+                                                    })
+                                                    .setNeutralButton("Copy to Clipboard", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            ClipboardManager clipboard = (ClipboardManager)
+                                                                    getSystemService(OcrActivity.CLIPBOARD_SERVICE);
+                                                            ClipData clip = ClipData.newPlainText("Link", userSelect);
+                                                            clipboard.setPrimaryClip(clip);
+                                                            Toast.makeText(OcrActivity.this, "Copied " + userSelect + " to clipboard!", Toast.LENGTH_SHORT).show();
+                                                            startActivity(intent);
+                                                        }
+                                                    });
                                             AlertDialog alert2 = alertBuilder2.create();
                                             alert2.show();
                                         }
                                     });
                             AlertDialog alert1 = alertBuilder1.create();
                             alert1.show();
+
 
                             alertBuilder2.setTitle("What would you like to do?")
                                     .setPositiveButton("Open", new DialogInterface.OnClickListener() {
@@ -270,8 +288,6 @@ public class OcrActivity extends AppCompatActivity {
                                         }
                                     });
                         }
-
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -286,6 +302,5 @@ public class OcrActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("ERROR:", "Exception");
         }
-
     }
 }

@@ -4,8 +4,10 @@
     <modules>
       <module fileurl="file://C:\Users\adria\Documents\Hackathon Projects\Hack Princeton 2017\Project 2\HackPrinceton.iml" filepath="C:\Users\adria\Documents\Hackathon Projects\Hack Princeton 2017\Project 2\HackPrinceton.iml" />
       <module fileurl="file://$PROJECT_DIR$/Project 2.iml" filepath="$PROJECT_DIR$/Project 2.iml" />
+      <module fileurl="file://C:\Users\Jeff\AndroidStudioProjects\HackPrinceton\Project 2.iml" filepath="C:\Users\Jeff\AndroidStudioProjects\HackPrinceton\Project 2.iml" />
       <module fileurl="file://C:\Users\Jeff\AndroidStudioProjects\Recognize\.idea\Recognize.iml" filepath="C:\Users\Jeff\AndroidStudioProjects\Recognize\.idea\Recognize.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\Jeff\AndroidStudioProjects\HackPrinceton\app\app.iml" filepath="C:\Users\Jeff\AndroidStudioProjects\HackPrinceton\app\app.iml" />
     </modules>
   </component>
 </project>
