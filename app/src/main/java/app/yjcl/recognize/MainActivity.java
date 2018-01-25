@@ -62,7 +62,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     // These two links are necessary to use Microsoft OCR
-    public static final String subscriptionKey = "f37f9bb130094c6a81ee64e6b6a97be7";
+    public static final String subscriptionKey = "0c6b0686ab954b86b55382d9bcd1b5c2";
     public static final String uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0";
 
     static final int REQUEST_TAKE_PHOTO = 1;

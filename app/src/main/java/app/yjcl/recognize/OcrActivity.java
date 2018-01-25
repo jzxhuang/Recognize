@@ -38,7 +38,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.ByteArrayEntity;
 
 public class OcrActivity extends AppCompatActivity {
-    private static final String subscriptionKey = "f37f9bb130094c6a81ee64e6b6a97be7";
+    private static final String subscriptionKey = "0c6b0686ab954b86b55382d9bcd1b5c2";
     private static final String uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/ocr?language=en&detectOrientation=true";
     private static final String imageURL = "http://www.folgerdigitaltexts.org/Images/grab6.png";
     public JSONObject jsonPOST;
